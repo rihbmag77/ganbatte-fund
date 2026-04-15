@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GANBATTE — Multi-Strategy Quantitative Fund</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Neue+Haas+Grotesk:wght@400;500;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #080A18;
+    --navy-mid: #0E1228;
+    --navy-card: #111830;
+    --navy-border: #1E2540;
+    --gold: #C9A84C;
+    --gold-light: #E2C47A;
+    --gold-dim: #7A6030;
+    --teal: #2DD4BF;
+    --white: #F0EEE8;
+    --muted: #8890AA;
+    --text: #C8CEDF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(8,10,24,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600; font-size: 22px;
+    letter-spacing: 0.28em; color: var(--gold);
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,168,76,0.07) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 80% 80%, rgba(45,212,191,0.04) 0%, transparent 60%);
+  }
+  .hero-eyebrow {
+    font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 28px; font-weight: 500;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(72px, 12vw, 140px);
+    font-weight: 600; letter-spacing: 0.18em;
+    color: var(--gold);
+    line-height: 1;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+  .hero-rule {
+    width: 120px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 32px auto;
+    animation: scaleIn 0.8s 0.3s ease both;
+  }
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 300; color: var(--white);
+    animation: fadeUp 0.8s 0.4s ease both;
+    margin-bottom: 12px;
+  }
+  .hero-tagline {
+    font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted);
+    animation: fadeUp 0.8s 0.5s ease both;
+  }
+  .hero-cta {
+    margin-top: 56px;
+    display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.6s ease both;
+  }
+  .btn {
+    display: inline-block;
+    padding: 14px 36px;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.25s;
+    font-weight: 500;
+  }
+  .btn-gold {
+    background: var(--gold); color: var(--navy);
+    border: 1px solid var(--gold);
+  }
+  .btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); }
+  .btn-outline {
+    background: transparent; color: var(--gold);
+    border: 1px solid var(--gold-dim);
+  }
+  .btn-outline:hover { border-color: var(--gold); background: rgba(201,168,76,0.06); }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--muted); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    animation: fadeUp 1s 1s ease both;
+  }
+  .scroll-hint::after {
+    content: '';
+    display: block; width: 1px; height: 32px;
+    background: linear-gradient(to bottom, var(--gold-dim), transparent);
+    animation: pulse 2s infinite;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 100px 48px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .section-full { max-width: 100%; padding-left: 0; padding-right: 0; }
+  .section-full > * { max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 48px; padding-right: 48px; }
+
+  .section-eyebrow {
+    font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 14px; font-weight: 500;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 600; color: var(--white);
+    line-height: 1.1; margin-bottom: 20px;
+  }
+  .section-subtitle {
+    font-size: 14px; color: var(--muted);
+    max-width: 600px; margin-bottom: 64px;
+    letter-spacing: 0.02em;
+  }
+  .gold-rule {
+    width: 48px; height: 2px;
+    background: var(--gold);
+    margin-bottom: 40px;
+  }
+
+  /* CARDS */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--navy-border);
+    border: 1px solid var(--navy-border);
+  }
+  .card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+
+  .card {
+    background: var(--navy-card);
+    padding: 36px 32px;
+    position: relative;
+    transition: background 0.25s;
+  }
+  .card:hover { background: #141A35; }
+  .card-label {
+    font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 14px; font-weight: 500;
+  }
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600; color: var(--white);
+    margin-bottom: 12px;
+  }
+  .card-text { font-size: 14px; color: var(--muted); line-height: 1.7; }
+  .card-accent { color: var(--teal); }
+
+  /* STAT CARDS */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--navy-border);
+    border: 1px solid var(--navy-border);
+    margin-bottom: 64px;
+  }
+  .stat-card {
+    background: var(--navy-card);
+    padding: 32px 28px;
+    text-align: center;
+  }
+  .stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px; font-weight: 300; color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); margin-top: 10px;
+  }
+
+  /* TEAM */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--navy-border);
+    border: 1px solid var(--navy-border);
+  }
+  .team-card {
+    background: var(--navy-card);
+    padding: 36px 32px;
+  }
+  .team-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px; font-weight: 600; color: var(--white);
+    margin-bottom: 4px;
+  }
+  .team-role { color: var(--gold); font-size: 12px; letter-spacing: 0.1em; margin-bottom: 20px; }
+  .team-list { list-style: none; }
+  .team-list li {
+    font-size: 13px; color: var(--muted);
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding-left: 14px; position: relative;
+  }
+  .team-list li::before {
+    content: '·'; position: absolute; left: 0;
+    color: var(--gold);
+  }
+
+  /* STRATEGY TABLE */
+  .strat-table {
+    width: 100%; border-collapse: collapse;
+    border: 1px solid var(--navy-border);
+  }
+  .strat-table th {
+    background: var(--navy-card);
+    padding: 16px 20px;
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); text-align: left;
+    border-bottom: 1px solid var(--navy-border);
+    font-weight: 500;
+  }
+  .strat-table td {
+    padding: 18px 20px;
+    font-size: 13px; color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .strat-table tr { background: var(--navy-card); transition: background 0.2s; }
+  .strat-table tr:hover { background: #141A35; }
+  .win-rate { font-family: 'DM Mono', monospace; color: var(--gold); font-size: 15px; font-weight: 400; }
+
+  /* TERMS TABLE */
+  .terms-table { width: 100%; border-collapse: collapse; }
+  .terms-table tr { border-bottom: 1px solid var(--navy-border); }
+  .terms-table td {
+    padding: 20px 24px;
+    font-size: 14px;
+  }
+  .terms-table td:first-child {
+    color: var(--gold); font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; width: 200px; font-weight: 500;
+  }
+  .terms-table td:last-child { color: var(--white); }
+
+  /* TIMELINE */
+  .timeline { display: flex; flex-direction: column; gap: 1px; background: var(--navy-border); border: 1px solid var(--navy-border); }
+  .timeline-item {
+    background: var(--navy-card);
+    display: grid; grid-template-columns: 100px 1fr;
+    gap: 0;
+  }
+  .timeline-year {
+    padding: 32px 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 300; color: var(--gold);
+    border-right: 1px solid var(--navy-border);
+    display: flex; align-items: center;
+  }
+  .timeline-content { padding: 32px 36px; }
+  .timeline-content h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--white); margin-bottom: 12px; }
+  .timeline-content ul { list-style: none; }
+  .timeline-content li { font-size: 13px; color: var(--muted); padding: 4px 0 4px 18px; position: relative; }
+  .timeline-content li::before { content: '—'; position: absolute; left: 0; color: var(--gold-dim); }
+
+  /* PIPELINE */
+  .pipeline {
+    display: flex; align-items: flex-start;
+    gap: 0; flex-wrap: nowrap;
+    overflow-x: auto;
+    border: 1px solid var(--navy-border);
+  }
+  .pipeline-step {
+    flex: 1; min-width: 160px;
+    background: var(--navy-card);
+    padding: 32px 24px;
+    position: relative;
+    border-right: 1px solid var(--navy-border);
+  }
+  .pipeline-step:last-child { border-right: none; }
+  .pipeline-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px; font-weight: 300; color: var(--gold);
+    line-height: 1; opacity: 0.4;
+    margin-bottom: 12px;
+  }
+  .pipeline-step h4 { font-size: 13px; color: var(--white); margin-bottom: 8px; font-weight: 500; }
+  .pipeline-step p { font-size: 12px; color: var(--muted); }
+
+  /* FAQ */
+  .faq-list { display: flex; flex-direction: column; gap: 1px; background: var(--navy-border); border: 1px solid var(--navy-border); }
+  .faq-item { background: var(--navy-card); padding: 0; }
+  .faq-q {
+    padding: 24px 32px;
+    color: var(--gold); font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none;
+  }
+  .faq-q::after { content: '+'; font-size: 20px; color: var(--gold-dim); }
+  .faq-q.open::after { content: '−'; }
+  .faq-a {
+    padding: 0 32px;
+    font-size: 14px; color: var(--muted); line-height: 1.8;
+    max-height: 0; overflow: hidden; transition: all 0.3s ease;
+  }
+  .faq-a.open { max-height: 200px; padding: 0 32px 24px; }
+
+  /* ADVISORS */
+  .advisor-table { width: 100%; border-collapse: collapse; border: 1px solid var(--navy-border); }
+  .advisor-table th {
+    background: var(--navy-card); padding: 16px 24px;
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); text-align: left; border-bottom: 1px solid var(--navy-border);
+  }
+  .advisor-table td { padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; }
+  .advisor-table tr { background: var(--navy-card); transition: background 0.2s; }
+  .advisor-table tr:hover { background: #141A35; }
+  .advisor-table .co { color: var(--teal); font-weight: 500; }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--navy-mid);
+    border-top: 1px solid var(--navy-border);
+    text-align: center;
+    padding: 100px 48px;
+  }
+  .contact-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 80px; font-weight: 600; color: var(--gold);
+    letter-spacing: 0.18em; margin-bottom: 20px;
+  }
+  .contact-tagline { color: var(--muted); font-size: 13px; margin-bottom: 48px; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .contact-email {
+    display: inline-block;
+    font-size: 18px; color: var(--white);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold-dim);
+    padding-bottom: 4px;
+    transition: border-color 0.2s;
+    margin-bottom: 60px;
+  }
+  .contact-email:hover { border-color: var(--gold); color: var(--gold); }
+  .contact-meaning {
+    font-size: 13px; color: var(--muted);
+    font-style: italic; max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* DISCLAIMER FOOTER */
+  footer {
+    background: #050710;
+    padding: 40px 48px;
+    text-align: center;
+    border-top: 1px solid var(--navy-border);
+  }
+  footer p { font-size: 11px; color: #445; line-height: 1.8; max-width: 900px; margin: 0 auto; }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--navy-border), transparent);
+    margin: 0;
+  }
+
+  /* BIG NUMBER SECTION */
+  .big-numbers {
+    background: var(--navy-mid);
+    padding: 80px 48px;
+    border-top: 1px solid var(--navy-border);
+    border-bottom: 1px solid var(--navy-border);
+  }
+
+  /* MARKET OPP STRIP */
+  .mkt-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px; background: var(--navy-border);
+    border: 1px solid var(--navy-border);
+  }
+  .mkt-card {
+    background: var(--navy-card); padding: 32px 28px;
+  }
+  .mkt-card h4 { color: var(--gold); font-size: 13px; letter-spacing: 0.1em; margin-bottom: 10px; font-weight: 500; }
+  .mkt-card p { color: var(--muted); font-size: 13px; }
+
+  /* NUMBERED LIST */
+  .num-list { display: flex; flex-direction: column; gap: 1px; background: var(--navy-border); border: 1px solid var(--navy-border); }
+  .num-item {
+    background: var(--navy-card);
+    display: grid; grid-template-columns: 64px 1fr; gap: 0;
+  }
+  .num-item-n {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px; color: var(--gold); opacity: 0.35;
+    padding: 28px 20px;
+    display: flex; align-items: center;
+    border-right: 1px solid var(--navy-border);
+  }
+  .num-item-body { padding: 28px 32px; }
+  .num-item-body h4 { color: var(--white); font-size: 15px; margin-bottom: 6px; font-weight: 500; }
+  .num-item-body p { color: var(--muted); font-size: 13px; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scaleX(0); }
+    to { opacity: 1; transform: scaleX(1); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* FADE-IN ON SCROLL */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 72px 24px; }
+    .hero { padding: 100px 24px 60px; }
+    .contact-title { font-size: 48px; }
+    .timeline-item { grid-template-columns: 70px 1fr; }
+    .pipeline { flex-direction: column; }
+    .pipeline-step { border-right: none; border-bottom: 1px solid var(--navy-border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">G A N B A T T E</span>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#team">Team</a>
+    <a href="#strategies">Strategies</a>
+    <a href="#terms">Terms</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Investment Opportunity · 2026</div>
+  <h1 class="hero-title">GANBATTE</h1>
+  <div class="hero-rule"></div>
+  <p class="hero-sub">Multi-Strategy Quantitative Fund</p>
+  <p class="hero-tagline">Multiple Strategies &nbsp;·&nbsp; Multiple Assets &nbsp;·&nbsp; Multiple Timeframes</p>
+  <div class="hero-cta">
+    <a href="#strategies" class="btn btn-gold">View Strategies</a>
+    <a href="#terms" class="btn btn-outline">Fund Terms</a>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</div>
+
+<!-- EXECUTIVE SUMMARY -->
+<section id="about">
+  <div class="reveal">
+    <div class="section-eyebrow">Executive Summary</div>
+    <h2 class="section-title">A New Kind of<br>Quantitative Fund</h2>
+    <div class="gold-rule"></div>
+    <p class="section-subtitle">Ganbatte Capital deploys a diversified portfolio of quantitative trading strategies across multiple asset classes, instruments, and timeframes — designed so that no single strategy, market, or condition determines the fund's performance.</p>
+  </div>
+
+  <div class="card-grid card-grid-2 reveal">
+    <div class="card">
+      <div class="card-label">Core Principle</div>
+      <div class="card-title">Smoother Equity Curve</div>
+      <p class="card-text">Multiple uncorrelated strategies balance each other — when one draws down, others compensate. By combining strategies with different risk profiles and return drivers, the portfolio produces a smoother equity curve than any individual strategy could achieve alone.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Design Philosophy</div>
+      <div class="card-title">No Single-Strategy Risk</div>
+      <p class="card-text">The fund avoids dependence on one instrument, one timeframe, or one market condition. Strategies are continuously researched, validated, and deployed based on where the strongest risk-adjusted opportunities exist.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Capital Management</div>
+      <div class="card-title">Adaptive Allocation</div>
+      <p class="card-text">Capital shifts dynamically to strategies showing the strongest current edge. Built by former leaders from elite proprietary trading firms, the platform spans equity index derivatives, commodities, currencies, digital assets, and individual equities.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Industry Validation</div>
+      <div class="card-title">Proven Model</div>
+      <p class="card-text">The world's most successful quantitative firms — Citadel, Jane Street, Two Sigma — all run multi-strategy portfolios. This approach is why they consistently generate exceptional risk-adjusted returns across all market conditions.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MARKET OPPORTUNITY -->
+<section>
+  <div class="reveal">
+    <div class="section-eyebrow">Market Opportunity</div>
+    <h2 class="section-title">Where We Find<br>Opportunities</h2>
+    <div class="gold-rule"></div>
+    <p class="section-subtitle">Structural inefficiencies across multiple markets — Ganbatte captures them wherever they appear.</p>
+  </div>
+
+  <div class="mkt-strip reveal">
+    <div class="mkt-card">
+      <h4>Equity Index Derivatives</h4>
+      <p>S&P 500 options trade $550B+ daily notional. Retail and institutional flow creates persistent mis-pricing.</p>
+    </div>
+    <div class="mkt-card">
+      <h4>Global Futures Markets</h4>
+      <p>Gold, silver, crude oil, currencies, and equity index futures offer deep liquidity and 24-hour access.</p>
+    </div>
+    <div class="mkt-card">
+      <h4>U.S. Equities</h4>
+      <p>1,500+ liquid stocks provide momentum, mean-reversion, and statistical arbitrage signals.</p>
+    </div>
+    <div class="mkt-card">
+      <h4>Digital Assets</h4>
+      <p>Bitcoin, Ethereum, and regulated crypto futures on CME offer emerging alpha sources.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="reveal">
+    <div class="section-eyebrow">Our Team</div>
+    <h2 class="section-title">Built by Industry<br>Veterans</h2>
+    <div class="gold-rule"></div>
+    <p class="section-subtitle">Former leaders from elite proprietary trading firms with deep expertise across every asset class we trade.</p>
+  </div>
+
+  <div class="team-grid reveal">
+    <div class="team-card">
+      <div class="team-name">Abhishek Gambhir</div>
+      <div class="team-role">CEO & Portfolio Manager</div>
+      <ul class="team-list">
+        <li>25-year career in Proprietary Trading including HFT pioneers Getco and Virtu Financial</li>
+        <li>Over $500M in cumulative trading profits generated across teams he has led</li>
+        <li>Expertise across options, futures, equities, commodities, and digital assets</li>
+        <li>Deep knowledge of market microstructure, risk management, and derivatives pricing</li>
+        <li>Sets fund strategy, portfolio allocation, and risk framework</li>
+      </ul>
+    </div>
+    <div class="team-card">
+      <div class="team-name">Amar Sandhu</div>
+      <div class="team-role">CTO & Infrastructure Architect</div>
+      <ul class="team-list">
+        <li>28+ years building technology for capital markets and financial institutions</li>
+        <li>Architect of mission-critical trading infrastructure at institutional scale</li>
+        <li>Specializes in low-latency systems, real-time risk engines, and execution platforms</li>
+        <li>Guided organizations through multiple market cycles and technology transformations</li>
+        <li>"Zero to One" builder — designed Ganbatte's multi-strategy platform from the ground up</li>
+      </ul>
+    </div>
+    <div class="team-card">
+      <div class="team-name">Sam Dhingra</div>
+      <div class="team-role">CBO & Legal Counsel</div>
+      <ul class="team-list">
+        <li>MBA and licensed attorney, admitted to the State Bar of California</li>
+        <li>25+ years spanning business strategy, legal, and compliance</li>
+        <li>Drives business growth, strategic partnerships, and investor relations</li>
+        <li>Oversees legal review, contracts, and regulatory risk management</li>
+        <li>Bridges product, finance, and executive leadership to scale the fund</li>
+      </ul>
+    </div>
+    <div class="team-card">
+      <div class="team-name">Anuja Chachra</div>
+      <div class="team-role">COO & Compliance Officer</div>
+      <ul class="team-list">
+        <li>Master's in Marketing Research from MICA, one of India's premier institutions</li>
+        <li>15+ years in operations, research, and process optimization</li>
+        <li>Manages day-to-day fund operations, vendor relationships, and workflow controls</li>
+        <li>Oversees compliance policies, regulatory filings, and internal audit protocols</li>
+        <li>Drives operational discipline and institutional-grade process standards</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ADVISORS -->
+<section>
+  <div class="reveal">
+    <div class="section-eyebrow">Board of Advisors</div>
+    <h2 class="section-title">Strategic Counsel</h2>
+    <div class="gold-rule"></div>
+    <p class="section-subtitle">Industry veterans with senior leadership experience at top global enterprises, providing strategic counsel as the fund scales.</p>
+  </div>
+
+  <table class="advisor-table reveal">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Notable Experience</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Anish Arora</td>
+        <td>Senior Director</td>
+        <td class="co">McKesson</td>
+      </tr>
+      <tr>
+        <td>Niraj Verma</td>
+        <td>Senior Technology Leader</td>
+        <td class="co">Google</td>
+      </tr>
+      <tr>
+        <td>Satinder Singh Randhawa</td>
+        <td>Senior Technology Leader</td>
+        <td class="co">Apple</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="divider"></div>
+
+<!-- STRATEGIES -->
+<section id="strategies">
+  <div class="reveal">
+    <div class="section-eyebrow">Strategy Portfolio</div>
+    <h2 class="section-title">Five Independent<br>Alpha Sources</h2>
+    <div class="gold-rule"></div>
+    <p class="section-subtitle">Each strategy contributes different return characteristics. Together, they aim to produce a more consistent portfolio equity curve than any single strategy alone.</p>
+  </div>
+
+  <div class="reveal" style="overflow-x:auto; margin-bottom: 64px;">
+    <table class="strat-table">
+      <thead>
+        <tr>
+          <th>Strategy</th>
+          <th>Win Rate</th>
+          <th>Holding Period</th>
+          <th>Instruments</th>
+          <th>Signal Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Equity Index Options</td>
+          <td><span class="win-rate">64%</span></td>
+          <td>Intraday</td>
+          <td>ES/NQ Options</td>
+          <td>Price Compression</td>
+        </tr>
+        <tr>
+          <td>Institutional Flow Analysis</td>
+          <td><span class="win-rate">57%</span></td>
+          <td>Intraday</td>
+          <td>SPX Options</td>
+          <td>Volume Flow · AI-Driven</td>
+        </tr>
+        <tr>
+          <td>Global Futures Portfolio</td>
+          <td><span class="win-rate">73%</span></td>
+          <td>2+ Days</td>
+          <td>8+ Futures</td>
+          <td>Contrarian</td>
+        </tr>
+        <tr>
+          <td>U.S. Equity Momentum</td>
+          <td><span class="win-rate">63%</span></td>
+          <td>3–5 Days</td>
+          <td>1,500+ Stocks</td>
+          <td>Momentum</td>
+        </tr>
+        <tr>
+          <td>Dynamic Range Trading</td>
+          <td><span class="win-rate">52%</span></td>
+          <td>Intraday</td>
+          <td>20+ Futures</td>
+          <td>Support/Resistance</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-grid reveal">
+    <div class="card">
+      <div class="card-label">Equity Index Options · 64% Win Rate</div>
+      <div class="card-title">Price Compression Spreads</div>
+      <p class="card-text">Wait for a short-term price compression in S&P 500 or Nasdaq. Buy a spread position with pre-set risk parameters. If the market bounces, the spread gains value. Positions typically close the same day. <span style="color:var(--gold)">75% of backtested months profitable.</span></p>
+    </div>
+    <div class="card">
+      <div class="card-label">Institutional Flow · 57% Win Rate · AI-Driven</div>
+      <div class="card-title">Smart Money Tracking</div>
+      <p class="card-text">Monitor every options trade in S&P 500. Detect large institutional trades as signals. Analyze bullish vs bearish flow and position based on conditions. AI learns which patterns predict profitability. <span style="color:var(--gold)">8/9 backtested months profitable.</span></p>
+    </div>
+    <div class="card">
+      <div class="card-label">Global Futures · 73% Win Rate</div>
+      <div class="card-title">Contrarian Momentum</div>
+      <p class="card-text">"Buy when others are fearful" — systematically. Monitor 8+ major markets: S&P 500, Nasdaq, Gold, Silver, Bitcoin, Ethereum, Nikkei, Euro. Buy the biggest 20-day losers and hold 2 days with strict stop loss. Trailing stop locks in profits.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">U.S. Equity Momentum · 63% Win Rate</div>
+      <div class="card-title">Adaptive Stock Momentum</div>
+      <p class="card-text">Scan 1,500+ stocks daily for strongest 5-day returns. Filter for 6%+ gains with healthy volume. Hold 3–5 days with strict stops. <span style="color:var(--teal)">Adaptive drawdown controls</span> automatically reduce position sizes during losing streaks.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Dynamic Range · 52% Win Rate</div>
+      <div class="card-title">Support & Resistance</div>
+      <p class="card-text">Identify key support and resistance levels across 20+ futures markets daily — equity indices, metals, energy, currencies, bonds, and digital assets. Enter positions when price reacts at critical levels with confirmation signals. Intraday holding only.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RESEARCH PIPELINE -->
+<section>
+  <div class="reveal">
+    <div class="section-eyebrow">Research & Backtesting</div>
+    <h2 class="section-title">From Idea to<br>Live Capital</h2>
+    <div class="gold-rule"></div>
+    <p class="section-subtitle">Strategies are rigorously validated using years of historical data before a single dollar is deployed in live markets.</p>
+  </div>
+
+  <div class="pipeline reveal">
+    <div class="pipeline-step">
+      <div class="pipeline-num">1</div>
+      <h4>Hypothesis</h4>
+      <p>Traders and AI tools identify a potential market inefficiency</p>
+    </div>
+    <div class="pipeline-step">
+      <div class="pipeline-num">2</div>
+      <h4>Backtest</h4>
+      <p>Multi-year historical simulation with conservative assumptions</p>
+    </div>
+    <div class="pipeline-step">
+      <div class="pipeline-num">3</div>
+      <h4>Validate</h4>
+      <p>Out-of-sample and walk-forward testing on unseen data</p>
+    </div>
+    <div class="pipeline-step">
+      <div class="pipeline-num">4</div>
+      <h4>Paper Trade</h4>
+      <p>Live market simulation without real capital at risk</p>
+    </div>
+    <div class="pipeline-step">
+      <div class="pipeline-num">5</div>
+      <h4>Deploy</h4>
+      <p>Gradual capital allocation with tight risk limits</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RISK MANAGEMENT -->
+<section>
+  <div class="reveal">
+    <div class="section-eyebrow">Risk Management</div>
+    <h2 class="section-title">Multi-Layered<br>Protection</h2>
+    <div class="gold-rule"></div>
+  </div>
+
+  <div class="card-grid reveal">
+    <div class="card">
+      <div class="card-label">Per Trade</div>
+      <div class="card-title">Trade-Level Risk</div>
+      <p class="card-text">Risk parameters and stop-losses are set before each trade. Position sizing is calibrated to manage downside on every entry.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Per Strategy</div>
+      <div class="card-title">Independent Risk Budgets</div>
+      <p class="card-text">Each strategy operates within independent risk budgets — one strategy's drawdown cannot infect others. Firewall between all strategies.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Portfolio Level</div>
+      <div class="card-title">Aggregate Controls</div>
+      <p class="card-text">Aggregate exposure across all strategies monitored and capped in real-time. Portfolio-level limits enforced automatically.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Systemic</div>
+      <div class="card-title">Technical Safeguards</div>
+      <p class="card-text">Pre-trade controls, kill switch for immediate cancellation, backup redundancy systems, real-time alerting, and clear incident response protocols.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PLATFORM TIMELINE -->
+<section>
+  <div class="reveal">
+    <div class="section-eyebrow">Platform Evolution</div>
+    <h2 class="section-title">Three Years to<br>Production</h2>
+    <div class="gold-rule"></div>
+  </div>
+
+  <div class="timeline reveal">
+    <div class="timeline-item">
+      <div class="timeline-year">2024</div>
+      <div class="timeline-content">
+        <h3>Research & Design</h3>
+        <ul>
+          <li>Team assembled from Getco/Virtu Financial and leading firms</li>
+          <li>Core algorithm development and multi-strategy architecture design</li>
+          <li>Prototype validation with real market data across multiple asset classes</li>
+        </ul>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2025</div>
+      <div class="timeline-content">
+        <h3>Production Platform</h3>
+        <ul>
+          <li>Ultra-competitive execution speed across multiple strategies</li>
+          <li>Multi-asset, multi-strategy platform live with real capital</li>
+          <li>Per-strategy and portfolio-level risk management operational</li>
+        </ul>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2026</div>
+      <div class="timeline-content">
+        <h3>Fund Launch</h3>
+        <ul>
+          <li>Open fund to outside investors</li>
+          <li>Scale capital deployment across validated strategies</li>
+          <li>Continue expanding strategy portfolio and market coverage</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WHY NOW -->
+<section>
+  <div class="reveal">
+    <div class="section-eyebrow">Why Now</div>
+    <h2 class="section-title">The Convergence<br>Moment</h2>
+    <div class="gold-rule"></div>
+  </div>
+
+  <div class="num-list reveal">
+    <div class="num-item">
+      <div class="num-item-n">1</div>
+      <div class="num-item-body">
+        <h4>Markets Growing Across All Asset Classes</h4>
+        <p>Options, futures, equities, and crypto markets all offer deepening liquidity. More volume = more opportunities for our multi-strategy approach.</p>
+      </div>
+    </div>
+    <div class="num-item">
+      <div class="num-item-n">2</div>
+      <div class="num-item-body">
+        <h4>Technology Is Proven & Multi-Strategy</h4>
+        <p>Production platform live since March 2025, running multiple strategies simultaneously with consistent results across different asset classes.</p>
+      </div>
+    </div>
+    <div class="num-item">
+      <div class="num-item-n">3</div>
+      <div class="num-item-body">
+        <h4>Team Has Multi-Asset DNA</h4>
+        <p>Getco and Virtu Financial veterans. Not specialists in one market — experts across all of them.</p>
+      </div>
+    </div>
+    <div class="num-item">
+      <div class="num-item-n">4</div>
+      <div class="num-item-body">
+        <h4>Institutional-Grade Risk Controls</h4>
+        <p>Multi-layered risk management across every strategy, with per-trade limits, adaptive position sizing, and real-time monitoring.</p>
+      </div>
+    </div>
+    <div class="num-item">
+      <div class="num-item-n">5</div>
+      <div class="num-item-body">
+        <h4>Research Pipeline Expands Alpha</h4>
+        <p>Every new validated strategy adds capacity and smooths the portfolio equity curve. The fund's potential grows continuously.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FUND TERMS -->
+<section id="terms">
+  <div class="reveal">
+    <div class="section-eyebrow">Fund Terms</div>
+    <h2 class="section-title">Investment<br>Structure</h2>
+    <div class="gold-rule"></div>
+  </div>
+
+  <div style="border: 1px solid var(--navy-border);" class="reveal">
+    <table class="terms-table">
+      <tr><td>Fund Name</td><td>Ganbatte Capital LLC</td></tr>
+      <tr><td>Manager</td><td>Ganbatte Markets LLC</td></tr>
+      <tr><td>Fund Structure</td><td>Delaware Limited Liability Company</td></tr>
+      <tr><td>Fund Objective</td><td>Risk-adjusted returns through multi-strategy quantitative trading across multiple asset classes</td></tr>
+      <tr><td>Minimum Investment</td><td>$250,000</td></tr>
+      <tr><td>Management Fee</td><td>2% annually</td></tr>
+      <tr><td>Performance Fee</td><td>0% on first 10% returns &nbsp;·&nbsp; 30% on 10–25% &nbsp;·&nbsp; 50% above 25%</td></tr>
+      <tr><td>High Water Mark</td><td>Yes</td></tr>
+      <tr><td>Lock-Up Period</td><td>12 months</td></tr>
+      <tr><td>Withdrawal Frequency</td><td>Quarterly after lock-up</td></tr>
+      <tr><td>Withdrawal Notice</td><td>15 days prior</td></tr>
+      <tr><td>Target AUM</td><td>$100M</td></tr>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FAQ -->
+<section>
+  <div class="reveal">
+    <div class="section-eyebrow">FAQ</div>
+    <h2 class="section-title">Frequently Asked<br>Questions</h2>
+    <div class="gold-rule"></div>
+  </div>
+
+  <div class="faq-list reveal">
+    <div class="faq-item">
+      <div class="faq-q">What is the minimum investment?</div>
+      <div class="faq-a">$250,000 provides meaningful participation and aligns with the fund's target investor profile.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How quickly can I withdraw?</div>
+      <div class="faq-a">After a 12-month lock-up, withdrawals are quarterly with 15 days' notice.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What if the market experiences extreme volatility?</div>
+      <div class="faq-a">Multiple strategies are designed for different conditions. Adaptive controls reduce exposure automatically. Many of our strategies close positions intraday, reducing overnight exposure. The multi-strategy design means the portfolio is not fully exposed to one scenario.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is the fund tied to one strategy or market?</div>
+      <div class="faq-a">No. We deploy multiple strategies across options, futures, equities, and digital assets. New strategies are continuously added. No single strategy, instrument, or timeframe defines the fund.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How do I track my investment?</div>
+      <div class="faq-a">Regular performance reports will be provided to all investors with full transparency on strategy-level and portfolio-level results.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div class="contact-section" id="contact">
+  <div class="hero-eyebrow" style="margin-bottom:24px;">Get In Touch</div>
+  <div class="contact-title">GANBATTE</div>
+  <p class="contact-tagline">We welcome conversations with qualified investors who share our long-term vision for disciplined quantitative trading.</p>
+  <a href="mailto:ganbattemarkets@gmail.com" class="contact-email">ganbattemarkets@gmail.com</a>
+  <br>
+  <p class="contact-meaning">Ganbatte is the expression for Ganbaru (頑張る) — a foundational Japanese concept meaning to persevere, endure, or do one's best, emphasizing maximum effort and determination through challenges.</p>
+</div>
+
+<!-- FOOTER / DISCLAIMER -->
+<footer>
+  <p><strong style="color:#667">IMPORTANT DISCLOSURES</strong><br><br>
+  This website is for informational purposes only and does not constitute an offer to sell or a solicitation of an offer to buy any securities. Prospective investors should carefully consider whether their financial condition permits them to participate. Commodity interest trading can quickly lead to large losses as well as gains. All performance figures cited are backtested and hypothetical — past performance and backtested results are not indicative of future results. The interests offered have not been registered under the Securities Act or the securities laws of any state and are being offered in reliance on exemptions from registration requirements. The interests are subject to restrictions on transferability and resale. This is not an exhaustive disclosure of all risks — please carefully study all offering materials before deciding to participate.</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const a = q.nextElementSibling;
+      const open = q.classList.contains('open');
+      document.querySelectorAll('.faq-q').forEach(x => { x.classList.remove('open'); x.nextElementSibling.classList.remove('open'); });
+      if (!open) { q.classList.add('open'); a.classList.add('open'); }
+    });
+  });
+</script>
+</body>
+</html>

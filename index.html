@@ -498,7 +498,7 @@
   }
 </style>
 </head>
-<body>
+<body style="overflow:hidden;">
 <div id="gate" style="
   position:fixed; inset:0; z-index:9999;
   background:#080A18;
@@ -552,7 +552,9 @@
   }
 
   function unlock() {
+    window.scrollTo(0, 0);
     var gate = document.getElementById('gate');
+    document.body.style.overflow = '';
     gate.style.transition = 'opacity 0.6s';
     gate.style.opacity = '0';
     setTimeout(function(){ gate.style.display = 'none'; }, 600);

@@ -499,6 +499,14 @@
     filter: grayscale(0%);
     border-color: var(--gold);
   }
+
+  @media (max-width: 768px) {
+    .terms-table { display: block; width: 100%; }
+    .terms-table tr { display: flex; flex-direction: column; padding: 16px 0; border-bottom: 1px solid var(--navy-border); }
+    .terms-table td { padding: 4px 16px; width: 100% !important; }
+    .terms-table td:first-child { font-size: 10px; padding-bottom: 6px; }
+    .terms-table td:last-child { font-size: 14px; word-break: break-word; white-space: normal; }
+  }
 </style>
 </head>
 <body style="overflow:hidden;">

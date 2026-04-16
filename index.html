@@ -533,15 +533,13 @@
     document.getElementById('pw').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') checkPw();
     });
-    // Check if already authenticated this session
-    if (sessionStorage.getItem('ganbatte_auth') === '1') unlock();
+    
   });
 
   function checkPw() {
     var val = document.getElementById('pw').value;
     var passwords = ['Abhishek', 'Amar', 'Sam', 'Anuja'];
     if (passwords.includes(val)) {
-      sessionStorage.setItem('ganbatte_auth', '1');
       trackLogin(val);
       unlock();
     } else {

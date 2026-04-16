@@ -499,6 +499,65 @@
 </style>
 </head>
 <body>
+<div id="gate" style="
+  position:fixed; inset:0; z-index:9999;
+  background:#080A18;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+">
+  <div style="color:#C9A84C; letter-spacing:0.28em; font-size:22px; margin-bottom:40px;">G A N B A T T E</div>
+  <div style="width:1px; height:40px; background:linear-gradient(to bottom,transparent,#C9A84C); margin-bottom:40px;"></div>
+  <p style="color:#8890AA; font-size:11px; letter-spacing:0.25em; text-transform:uppercase; margin-bottom:24px;">Private Access Only</p>
+  <input id="pw" type="password" placeholder="Enter password"
+    style="
+      background:transparent; border:none; border-bottom:1px solid #2E3550;
+      color:#F0EEE8; font-size:16px; padding:12px 0; width:240px;
+      text-align:center; letter-spacing:0.15em; outline:none;
+      font-family:'Cormorant Garamond',serif;
+    "
+  />
+  <div id="pw-err" style="color:#C94C4C; font-size:11px; letter-spacing:0.15em; margin-top:16px; opacity:0; transition:opacity 0.3s;">Incorrect password</div>
+  <button onclick="checkPw()" style="
+    margin-top:32px; padding:14px 48px;
+    background:#C9A84C; color:#080A18;
+    border:none; cursor:pointer;
+    font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
+    font-family:'Neue Haas Grotesk','Helvetica Neue',sans-serif;
+    font-weight:500;
+  ">Enter</button>
+</div>
+
+<script>
+  // Allow Enter key to submit
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('pw').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') checkPw();
+    });
+    // Check if already authenticated this session
+    if (sessionStorage.getItem('ganbatte_auth') === '1') unlock();
+  });
+
+  function checkPw() {
+    var val = document.getElementById('pw').value;
+    if (val === 'Ganbatte2026') {
+      sessionStorage.setItem('ganbatte_auth', '1');
+      unlock();
+    } else {
+      var err = document.getElementById('pw-err');
+      err.style.opacity = '1';
+      document.getElementById('pw').value = '';
+      setTimeout(function(){ err.style.opacity = '0'; }, 2000);
+    }
+  }
+
+  function unlock() {
+    var gate = document.getElementById('gate');
+    gate.style.transition = 'opacity 0.6s';
+    gate.style.opacity = '0';
+    setTimeout(function(){ gate.style.display = 'none'; }, 600);
+  }
+</script>
+
 
 <!-- NAV -->
 <nav>

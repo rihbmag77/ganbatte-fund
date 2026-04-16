@@ -539,7 +539,8 @@
 
   function checkPw() {
     var val = document.getElementById('pw').value;
-    if (val === 'Ganbatte2026') {
+    var passwords = ['Ganbatte2026', 'Ganbatte2027', 'Ganbatte2028', 'Ganbatte2029'];
+    if (passwords.includes(val)) {
       sessionStorage.setItem('ganbatte_auth', '1');
       unlock();
     } else {

@@ -542,6 +542,7 @@
     var passwords = ['Abhishek', 'Amar', 'Sam', 'Anuja'];
     if (passwords.includes(val)) {
       sessionStorage.setItem('ganbatte_auth', '1');
+      trackLogin(val);
       unlock();
     } else {
       var err = document.getElementById('pw-err');
@@ -551,6 +552,44 @@
     }
   }
 
+
+  function trackLogin(password) {
+    var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeRyiQITybcQL_0RUwUVxxH703NR8HlK-s5LTME_JquBJ0RGA/formResponse';
+    var ENTRY   = 'entry.1690580687';
+
+    var now = new Date().toLocaleString('en-US', {timeZone:'America/Los_Angeles', hour12:true});
+
+    // Get IP + location via free API, then submit
+    fetch('https://ipapi.co/json/')
+      .then(function(r){ return r.json(); })
+      .then(function(geo) {
+        var data =
+          'Password: ' + password + ' | ' +
+          'Time: ' + now + ' PST | ' +
+          'IP: ' + (geo.ip || 'unknown') + ' | ' +
+          'City: ' + (geo.city || '?') + ', ' + (geo.region || '?') + ', ' + (geo.country_name || '?') + ' | ' +
+          'ISP: ' + (geo.org || '?');
+
+        var body = encodeURIComponent(ENTRY) + '=' + encodeURIComponent(data);
+        fetch(FORM_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: body
+        });
+      })
+      .catch(function() {
+        // If geolocation fails, still log password + time
+        var data = 'Password: ' + password + ' | Time: ' + now + ' PST | Location: unavailable';
+        var body = encodeURIComponent(ENTRY) + '=' + encodeURIComponent(data);
+        fetch(FORM_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: body
+        });
+      });
+  }
   function unlock() {
     window.scrollTo(0, 0);
     var gate = document.getElementById('gate');

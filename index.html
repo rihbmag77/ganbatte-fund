@@ -509,116 +509,7 @@
   }
 </style>
 </head>
-<body style="overflow:hidden;">
-<div id="gate" style="
-  position:fixed; inset:0; z-index:9999;
-  background:#080A18;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  font-family:'Cormorant Garamond',serif;
-">
-  <div style="color:#C9A84C; letter-spacing:0.28em; font-size:22px; margin-bottom:40px;">G A N B A T T E</div>
-  <div style="width:1px; height:40px; background:linear-gradient(to bottom,transparent,#C9A84C); margin-bottom:40px;"></div>
-  <p style="color:#8890AA; font-size:11px; letter-spacing:0.25em; text-transform:uppercase; margin-bottom:24px;">Private Access Only</p>
-  <input id="pw" type="password" placeholder="Enter password"
-    style="
-      background:transparent; border:none; border-bottom:1px solid #2E3550;
-      color:#F0EEE8; font-size:16px; padding:12px 0; width:240px;
-      text-align:center; letter-spacing:0.15em; outline:none;
-      font-family:'Cormorant Garamond',serif;
-    "
-  />
-  <div id="pw-err" style="color:#C94C4C; font-size:11px; letter-spacing:0.15em; margin-top:16px; opacity:0; transition:opacity 0.3s;">Incorrect password</div>
-  <button onclick="checkPw()" style="
-    margin-top:32px; padding:14px 48px;
-    background:#C9A84C; color:#080A18;
-    border:none; cursor:pointer;
-    font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
-    font-family:'Neue Haas Grotesk','Helvetica Neue',sans-serif;
-    font-weight:500;
-  ">Enter</button>
-</div>
-
-<script>
-  // Allow Enter key to submit
-  document.addEventListener('DOMContentLoaded', function() {
-    // Always show gate on every page load
-    var gate = document.getElementById('gate');
-    gate.style.display = 'flex';
-    gate.style.opacity = '1';
-    document.body.style.overflow = 'hidden';
-    document.getElementById('pw').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') checkPw();
-    });
-    
-  });
-
-  function checkPw() {
-    var val = document.getElementById('pw').value;
-    var passwords = ['Abhishek', 'Amar', 'Sam', 'Anuja'];
-    if (passwords.includes(val)) {
-      trackLogin(val);
-      unlock();
-    } else {
-      var err = document.getElementById('pw-err');
-      err.style.opacity = '1';
-      document.getElementById('pw').value = '';
-      setTimeout(function(){ err.style.opacity = '0'; }, 2000);
-    }
-  }
-
-
-  function trackLogin(password) {
-    var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeRyiQITybcQL_0RUwUVxxH703NR8HlK-s5LTME_JquBJ0RGA/formResponse';
-    var ENTRY = 'entry.1690580687';
-    var now = new Date().toLocaleString('en-US', {timeZone:'America/Los_Angeles', hour12:true});
-
-    function submitViaIframe(data) {
-      var iframe = document.createElement('iframe');
-      iframe.name = 'hidden_iframe_' + Date.now();
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-
-      var form = document.createElement('form');
-      form.method = 'POST';
-      form.action = FORM_URL;
-      form.target = iframe.name;
-      form.style.display = 'none';
-
-      var input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = ENTRY;
-      input.value = data;
-      form.appendChild(input);
-
-      document.body.appendChild(form);
-      form.submit();
-
-      setTimeout(function() {
-        document.body.removeChild(form);
-        document.body.removeChild(iframe);
-      }, 5000);
-    }
-
-    // Submit immediately with basic info
-    submitViaIframe('Password: ' + password + ' | Time: ' + now + ' PST');
-
-    // Then resubmit with location if available
-    fetch('https://ipapi.co/json/')
-      .then(function(r){ return r.json(); })
-      .then(function(geo) {
-        submitViaIframe('Password: ' + password + ' | Time: ' + now + ' PST | IP: ' + geo.ip + ' | ' + geo.city + ', ' + geo.region + ', ' + geo.country_name + ' | ISP: ' + geo.org);
-      }).catch(function(){});
-  }
-
-  function unlock() {
-    window.scrollTo(0, 0);
-    var gate = document.getElementById('gate');
-    document.body.style.overflow = '';
-    gate.style.transition = 'opacity 0.6s';
-    gate.style.opacity = '0';
-    setTimeout(function(){ gate.style.display = 'none'; }, 600);
-  }
-</script>
+<body>
 
 
 <!-- NAV -->
@@ -1091,8 +982,8 @@
       <tr><td>Fund Structure</td><td>Delaware Limited Liability Company</td></tr>
       <tr><td>Fund Objective</td><td>Risk-adjusted returns through multi-strategy quantitative trading across multiple asset classes</td></tr>
       <tr><td>Minimum Investment</td><td>$500,000</td></tr>
-      <tr><td>Management Fee</td><td>2% per annum<br><span style="font-size:12px; color:#8890AA; display:block; line-height:1.7;">Charged quarterly (0.5% per quarter)<br>at end of each calendar quarter, regardless of start date.</span></td></tr>
-      <tr><td>Performance Fee</td><td style="line-height:2.2"><span style="white-space:nowrap">15% &nbsp;on 0–10% returns</span><br><span style="white-space:nowrap">30% &nbsp;on 10–20% returns</span><br><span style="white-space:nowrap">45% &nbsp;on 20% plus returns</span><br><br><span style="font-size:12px; color:#8890AA; display:block; line-height:1.7;">Assessed quarterly regardless of start date.<br>High water mark applies.</span></td></tr>
+      <tr><td>Management Fee</td><td>1.5% per annum<br><span style="font-size:12px; color:#8890AA; display:block; line-height:1.7;">Charged quarterly (0.375% per quarter)<br>at end of each calendar quarter, regardless of start date.</span></td></tr>
+      <tr><td>Performance Fee</td><td>15% of quarterly net profits<br><span style="font-size:12px; color:#8890AA; display:block; line-height:1.7;">Assessed quarterly, subject to high water mark.<br>No fee charged unless new highs are reached.</span></td></tr>
       <tr><td>High Water Mark</td><td>Yes</td></tr>
       <tr><td>Lock-Up Period</td><td>12 months</td></tr>
       <tr><td>Withdrawal Frequency</td><td>Quarterly after lock-up</td></tr>
